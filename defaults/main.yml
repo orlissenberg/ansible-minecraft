@@ -1,0 +1,20 @@
+---
+# defaults file for minecraft
+
+minecraft_version: 1.10.2
+minecraft_owner: minecraft
+minecraft_group: minecraft
+minecraft_users: []
+minecraft_servers:
+  -
+    path: "default"
+    system_name: "default"
+    server_port: 25565
+    game_mode: 0
+    level_name: "world"
+    max_players: 20
+    pvp: "true"
+    white_list: "false"
+    white_list_members: []
+    ops_members: []
+    motd: A Minecraft Server

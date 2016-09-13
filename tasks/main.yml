@@ -1,0 +1,85 @@
+---
+# tasks file for minecraft
+
+- file: path=/opt/minecraft state=directory
+
+- get_url: url=https://s3.amazonaws.com/Minecraft.Download/versions/{{ minecraft_version }}/minecraft_server.{{ minecraft_version }}.jar mode=0644 validate_certs=False
+  args:
+    dest: "/opt/minecraft/minecraft_server.jar"
+    force: no
+
+# user/group management
+
+- group: name={{ minecraft_group }}
+
+- user: name={{ minecraft_owner }} shell=/bin/bash groups={{ minecraft_group }} append=yes createhome=yes
+
+- name: Adding existing user to the minecraft group
+  user: name="{{ item }}" groups={{ minecraft_group }} append=yes
+  with_items: minecraft_users
+
+- file: path=/opt/minecraft owner="{{ minecraft_owner }}" group="{{ minecraft_group }}" mode=0770 recurse=yes
+
+- file: path=/opt/minecraft/{{ item.path }} state=directory
+  with_items: minecraft_servers
+
+- copy: src=eula.txt dest=/opt/minecraft/{{ item.path }}/eula.txt
+  args:
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- copy: src=usercache.json dest=/opt/minecraft/{{ item.path }}/usercache.json
+  args:
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- copy: src=banned-players.json dest=/opt/minecraft/{{ item.path }}/banned-players.json
+  args:
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- copy: src=banned-ips.json dest=/opt/minecraft/{{ item.path }}/banned-ips.json
+  args:
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- template: src=whitelist.json.j2
+  args:
+    dest: "/opt/minecraft/{{ item.path }}/whitelist.json"
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- template: src=ops.json.j2
+  args:
+    dest: "/opt/minecraft/{{ item.path }}/ops.json"
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+- template: src=server.properties.j2
+  args:
+    dest: "/opt/minecraft/{{ item.path }}/server.properties"
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers
+
+# Prepare supervisord configuration
+- template: src=minecraft.conf.j2
+  args:
+    dest: "/opt/minecraft/{{ item.path }}/{{ item.system_name }}_minecraft.conf"
+    owner: "{{ minecraft_owner }}"
+    group: "{{ minecraft_group }}"
+    mode: 0664
+  with_items: minecraft_servers

@@ -1,0 +1,11 @@
+[
+{% for member in item.white_list_members %}
+    {
+    "uuid": "{{ member.uuid }}",
+    "name": "{{ member.name }}"
+    }
+    {% if not loop.last %}
+        ,
+    {% endif %}
+{% endfor %}
+]

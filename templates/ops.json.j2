@@ -1,0 +1,12 @@
+[
+{% for member in item.ops_members %}
+    {
+    "uuid": "{{ member.uuid }}",
+    "name": "{{ member.name }}",
+    "level": 4
+    }
+    {% if not loop.last %}
+        ,
+    {% endif %}
+{% endfor %}
+]
