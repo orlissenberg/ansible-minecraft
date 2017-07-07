@@ -1,4 +1,6 @@
 [program:{{ item.system_name }}_minecraft]
+autostart=false
+autorestart=true
 startsecs=5
 directory=/opt/minecraft/{{ item.path }}
 command=java -Xmx1024M -Xms1024M -jar /opt/minecraft/minecraft_server.jar nogui
